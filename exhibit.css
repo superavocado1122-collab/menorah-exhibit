@@ -399,6 +399,18 @@ em, i, cite { font-style: italic; }
 }
 
 /* ---------- Print: the whole exhibit as a catalogue ---------- */
+/* Room for the host's fixed badge (bottom right, about 200 by 64 px) */
+.has-host-badge .navbar { padding-right: 220px; }
+@media (max-width: 860px) {
+  .has-host-badge { --nav-h: 130px; }
+  .has-host-badge .navbar { padding-right: var(--gutter); padding-bottom: 64px; }
+}
+@media (max-width: 640px) {
+  .has-host-badge { --nav-h: 130px; }
+}
+.has-host-badge .present { --nav-h: 58px; }
+.has-host-badge .present .navbar { padding-bottom: 0; }
+
 @media print {
   @page { size: letter; margin: 0.6in; }
   :root, [data-room="dark"], [data-room="light"] { --wall: #fff; --wall-2: #f3f1ec; --ink: #111; --ink-2: #444; --rule: #bbb; --gold: #8a6d2f; --gold-ink: #6b5222; --mount: #fff; --shadow: none; }

@@ -319,6 +319,16 @@
     window.addEventListener("resize", function () { if (viewer.classList.contains("open")) reset(); });
   }
 
+  /* ---------- Host badge: the free Netlify plan adds a fixed "Powered by Netlify"
+     badge in the bottom-right corner. Make room for it so it never covers Next. ---------- */
+  (function watchHostBadge() {
+    var tries = 0;
+    var t = setInterval(function () {
+      if (doc.getElementById("nl-badge-frame")) { doc.documentElement.classList.add("has-host-badge"); clearInterval(t); }
+      else if (++tries > 40) clearInterval(t);
+    }, 250);
+  })();
+
   /* ---------- Start ---------- */
   go(indexFromHash(), { instant: true });
 })();
