@@ -362,6 +362,19 @@ em, i, cite { font-style: italic; }
 .present .w-text .when { font-size: 1rem; }
 .present .visibility { font-size: 1rem; }
 .present .w-plate img { max-height: calc(100dvh - var(--nav-h) - 6rem); }
+/* Numbered close-ups in Present mode: a row under the main picture, so the whole screen fits without scrolling */
+.present .slide-work.has-details .w-plate img { max-height: calc(100dvh - var(--nav-h) - 6rem - 27vh); }
+.present .slide-work.has-details .w-pair .zoom img { max-height: calc(100dvh - var(--nav-h) - 8rem - 27vh); }
+.p-details .details { display: flex; flex-wrap: nowrap; justify-content: center; gap: 1rem; margin: 1rem auto 0; max-width: 100%; }
+.p-details .details figure { flex: 0 1 13rem; min-width: 0; }
+.p-details .details .crop { padding: 0.25rem; }
+.p-details .details .crop img { height: 15vh; max-height: 15vh; width: 100%; object-fit: contain; }
+.p-details .details figcaption { font: 400 0.84rem/1.35 var(--sans); color: var(--ink-2); margin-top: 0.4rem; }
+/* One close-up: picture and caption side by side */
+.p-details .details figure:only-child { flex: 0 1 auto; max-width: 36rem; margin: 0 auto; display: flex; align-items: center; gap: 1rem; }
+.p-details .details figure:only-child .crop { flex: 0 0 auto; width: auto; }
+.p-details .details figure:only-child .crop img { width: auto; height: 19vh; max-height: 19vh; max-width: 16rem; }
+.p-details .details figure:only-child figcaption { margin-top: 0; font-size: 0.92rem; flex: 0 1 20rem; }
 
 /* ---------- No JavaScript: show everything as one long page ---------- */
 .no-js .deck, .no-js .slide { position: static; }
