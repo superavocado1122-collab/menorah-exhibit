@@ -128,8 +128,11 @@ em, i, cite { font-style: italic; }
 /* ---------- Title slide ---------- */
 .slide-title { grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr); }
 .slide-title .t-text { display: flex; flex-direction: column; justify-content: center; padding: clamp(2rem, 5vw, 5.5rem) var(--gutter); }
+.slide-title .t-text { container-type: inline-size; }
 .slide-title h1 {
-  font-size: clamp(2.6rem, 1.2rem + 4.8vw, 6.2rem); line-height: 1.0; font-weight: 330;
+  /* One line: the title is about 9.3 em wide, so 10.2% of the column width keeps it inside. */
+  font-size: clamp(2rem, 1rem + 3.4vw, 4.6rem); font-size: min(5.6rem, 10.2cqi);
+  white-space: nowrap; line-height: 1.0; font-weight: 330;
   font-variation-settings: "opsz" 72; letter-spacing: -0.02em;
 }
 .slide-title .subtitle {
