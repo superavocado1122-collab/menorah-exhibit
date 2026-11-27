@@ -219,6 +219,7 @@ em, i, cite { font-style: italic; }
   pointer-events: none;
 }
 .credit { font: 400 0.7rem/1.45 var(--sans); color: var(--ink-2); margin: 0.75rem auto 0; max-width: 46rem; text-align: center; }
+.w-media > .credit { margin: 0.75rem auto 0; }  /* beats ".slide p", which had removed the space above the credit line */
 .w-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; align-items: center; }
 .w-pair figure { margin: 0; }
 .w-pair figcaption { font: 500 0.7rem/1.35 var(--sans); color: var(--ink-2); margin-top: 0.4rem; text-align: center; }
@@ -353,14 +354,18 @@ em, i, cite { font-style: italic; }
 .viewer-help { position: absolute; left: 1rem; bottom: 0.9rem; font: 400 0.74rem/1.4 var(--sans); color: #a99f8b; }
 
 /* ---------- Present mode (for class) ---------- */
-.present { --bar-h: 0px; --nav-h: 58px; font-size: clamp(1.15rem, 0.8rem + 0.75vw, 1.6rem); }
+/* Present mode type scales with both the width and the height of the screen, so short
+   projector screens (1280 by 720, 1366 by 768) fit too. --pfit is lowered by exhibit.js
+   if a screen's text would still need scrolling. */
+.present { --bar-h: 0px; --nav-h: 58px; font-size: clamp(1rem, min(0.8rem + 0.75vw, 0.5rem + 1.75vh), 1.6rem); }
 .present .topbar { display: none; }
 .present .nav-btn .ttl { display: none; }
 .present .full-only { display: none; }
 .present .present-only { display: block; }
-.present .w-text h2 { font-size: clamp(2.2rem, 1.2rem + 2.4vw, 3.6rem); }
-.present .w-text .when { font-size: 1rem; }
-.present .visibility { font-size: 1rem; }
+.present .w-text { --pfit: 1; padding-top: clamp(1rem, 2.6vh, 2.4rem); padding-bottom: 1.2rem; font-size: calc(1em * var(--pfit)); }
+.present .w-text h2 { font-size: calc(clamp(1.7rem, min(1.2rem + 2.4vw, 5.4vh), 3.6rem) * var(--pfit)); }
+.present .w-text .when { font-size: calc(min(1rem, 2.2vh) * var(--pfit)); margin-bottom: 0.9rem; }
+.present .visibility { font-size: calc(min(1rem, 2.15vh) * var(--pfit)); }
 .present .w-plate img { max-height: calc(100dvh - var(--nav-h) - 6rem); }
 /* Numbered close-ups in Present mode: a row under the main picture, so the whole screen fits without scrolling */
 .present .slide-work.has-details .w-plate img { max-height: calc(100dvh - var(--nav-h) - 6rem - 27vh); }
@@ -424,7 +429,8 @@ em, i, cite { font-style: italic; }
   .visibility .badge { grid-row: auto; justify-self: start; }
   .parts li { grid-template-columns: 2rem 1fr; }
   .parts .d { grid-column: 2; white-space: normal; }
-  .w-pair { grid-template-columns: 1fr; }
+  .w-pair { grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+  .w-pair figcaption { font-size: 0.66rem; }
 }
 
 /* ---------- Print: the whole exhibit as a catalogue ---------- */

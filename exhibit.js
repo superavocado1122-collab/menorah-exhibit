@@ -122,6 +122,7 @@
     cur = i;
     setHash(i);
     updateChrome();
+    if (typeof scheduleFit === "function") scheduleFit();
   }
   function next() { go(cur + 1); }
   function prev() { go(cur - 1); }
@@ -210,9 +211,56 @@
     });
   }
 
+  /* ---------- Present mode: shrink a screen's text a little if it would need scrolling ---------- */
+  var fitOnceTimer = null;
+  function scheduleFitOnce() { clearTimeout(fitOnceTimer); fitOnceTimer = setTimeout(fitPresent, 30); }
+  function fitPresent() {
+    slides.forEach(function (sl) {
+      var w = sl.querySelector(".w-text"); if (w) w.style.removeProperty("--pfit");
+      sl.querySelectorAll(".w-plate img").forEach(function (im) { im.style.maxHeight = ""; });
+    });
+    var s = slides[cur];
+    if (!s) return;
+    /* The picture must fit inside its frame, so it never runs into the credit line or the close-ups below it */
+    var plate = s.querySelector(".w-plate");
+    if (plate && plate.offsetParent !== null) {
+      var imgs = Array.prototype.slice.call(plate.querySelectorAll("img"));
+      imgs.forEach(function (im) { if (im.decode && !im.complete) im.decode().then(scheduleFitOnce, function () {}); });
+      var h = 0;
+      imgs.forEach(function (im) { h = Math.max(h, im.getBoundingClientRect().height); });
+      /* the frame is squeezed by the credit line and close-ups below it; the picture is too big
+         when it spills out of the frame */
+      var tooBig = function () { return plate.scrollHeight > plate.clientHeight; };
+      var guard = 0;
+      while (tooBig() && h > 60 && guard++ < 80) {
+        h -= 10;
+        imgs.forEach(function (im) { im.style.maxHeight = h + "px"; });
+      }
+    }
+    if (!body.classList.contains("present")) return;
+    var wt = s.querySelector(".w-text");
+    if (!wt) return;
+    var f = 1;
+    while (s.scrollHeight > s.clientHeight + 1 && f > 0.6) {
+      f = Math.round((f - 0.04) * 100) / 100;
+      wt.style.setProperty("--pfit", f);
+    }
+  }
+  var fitTimers = [];
+  function scheduleFit() {
+    fitTimers.forEach(clearTimeout);
+    /* run again after the slide transition and after late-decoding images */
+    fitTimers = [60, 700, 1600].map(function (ms) { return setTimeout(fitPresent, ms); });
+  }
+  window.addEventListener("resize", scheduleFit);
+  slides.forEach(function (sl) {
+    sl.querySelectorAll(".w-plate img").forEach(function (im) { im.addEventListener("load", function () { if (sl === slides[cur]) scheduleFit(); }); });
+  });
+
   /* ---------- Present mode (full screen, larger type, short labels) ---------- */
   function setPresent(on) {
     body.classList.toggle("present", on);
+    scheduleFit();
     var fsEl = doc.fullscreenElement || doc.webkitFullscreenElement;
     try {
       if (on && !fsEl && root.requestFullscreen) root.requestFullscreen().catch(function () {});
@@ -222,6 +270,7 @@
   function togglePresent() { setPresent(!body.classList.contains("present")); }
   doc.addEventListener("fullscreenchange", function () {
     if (!doc.fullscreenElement && body.classList.contains("present")) body.classList.remove("present");
+    scheduleFit();
   });
 
   /* ---------- Full-screen image viewer with zoom and pan ---------- */
