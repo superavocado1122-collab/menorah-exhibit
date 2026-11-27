@@ -148,6 +148,10 @@
   doc.addEventListener("keydown", function (e) {
     if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey) return;
     if (viewer && viewer.classList.contains("open")) return;
+    if (lightbox && !lightbox.hidden) {
+      if (e.key === "Escape") { e.preventDefault(); closeLightbox(); }
+      return;
+    }
     if (contents && contents.classList.contains("open")) {
       if (e.key === "Escape") { e.preventDefault(); closeContents(); }
       return;
@@ -175,6 +179,8 @@
     var fast = Date.now() - st < 700; st = 0;
     if (fast && Math.abs(dx) > 60 && Math.abs(dx) > 1.6 * Math.abs(dy)) { if (dx < 0) next(); else prev(); }
   }, { passive: true });
+
+  var lightbox = doc.querySelector(".lightbox"), lbOpener = null;
 
   /* ---------- Contents dialog ---------- */
   var contents = doc.querySelector(".contents");
@@ -317,6 +323,37 @@
     stage.addEventListener("pointerup", up);
     stage.addEventListener("pointercancel", up);
     window.addEventListener("resize", function () { if (viewer.classList.contains("open")) reset(); });
+  }
+
+  /* ---------- Image credits: click a thumbnail to see it large; close with the X,
+     a click anywhere off the image, or Escape ---------- */
+  function openLightbox(btn) {
+    if (!lightbox) return;
+    var img = lightbox.querySelector("img");
+    img.src = btn.getAttribute("data-large");
+    img.alt = btn.getAttribute("data-alt") || "";
+    lightbox.querySelector("figcaption").textContent = btn.getAttribute("data-caption") || "";
+    lbOpener = btn;
+    lightbox.hidden = false;
+    lightbox.querySelector(".lb-close").focus();
+  }
+  function closeLightbox() {
+    if (!lightbox || lightbox.hidden) return;
+    lightbox.hidden = true;
+    lightbox.querySelector("img").removeAttribute("src");
+    if (lbOpener && lbOpener.focus) lbOpener.focus();
+  }
+  if (lightbox) {
+    doc.addEventListener("click", function (e) {
+      var t = e.target.closest ? e.target.closest("button.thumb") : null;
+      if (t) { e.preventDefault(); openLightbox(t); }
+    });
+    lightbox.addEventListener("click", function (e) {
+      if (e.target.tagName !== "IMG") closeLightbox();
+    });
+    lightbox.addEventListener("keydown", function (e) {
+      if (e.key === "Tab") { e.preventDefault(); lightbox.querySelector(".lb-close").focus(); }
+    });
   }
 
   /* ---------- Host badge: the free Netlify plan adds a fixed "Powered by Netlify"
